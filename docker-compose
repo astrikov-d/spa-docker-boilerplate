@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+
+if [[ $OSTYPE == "darwin"* ]]; then
+  READLINK="greadlink"
+  GREP="ggrep"
+  DOCKER_NETWORK_INTERFACE="en0"
+else
+  READLINK="readlink"
+  GREP="grep"
+  DOCKER_NETWORK_INTERFACE="docker0"
+fi
+
+SCRIPT=$($READLINK -f "$0")
+SCRIPTPATH=$(dirname "$SCRIPT")
+
+set -a
+
+DIRNAME=$(basename "$SCRIPTPATH")
+
+DOCKER_USER=`id -u`:`id -g`
+
+DOCKER_HOST_IP=$(ip -4 addr show $DOCKER_NETWORK_INTERFACE | $GREP -Po 'inet \K[\d.]+')
+
+source "$SCRIPTPATH/.env"
+
+POSTGRES_URL="postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}"
+
+docker-compose -f "$SCRIPTPATH/docker-compose.local.yml" $@

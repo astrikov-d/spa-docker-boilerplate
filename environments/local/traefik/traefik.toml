@@ -1,0 +1,19 @@
+[global]
+  sendAnonymousUsage = false
+
+[log]
+  level = "INFO"
+  format = "common"
+
+[entryPoints]
+  [entryPoints.http]
+    address = ":80"
+
+[api]
+  insecure = true
+  dashboard = true
+
+[providers]
+  [providers.file]
+    watch = true
+    filename = "/etc/traefik/traefik.config.toml"

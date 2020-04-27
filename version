@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+
+if [[ $OSTYPE == "darwin"* ]]; then
+  READLINK="greadlink"
+else
+  READLINK="readlink"
+fi
+
+SCRIPT=$($READLINK -f "$0")
+SCRIPTPATH=$(dirname "$SCRIPT")
+
+cd "$SCRIPTPATH"
+
+build=$(git describe --always 2>/dev/null)
+if [ $? -ne 0 ]; then
+  echo 'not a git repo' >&2
+  exit 1
+fi
+
+tag=$(git describe --tags 2>/dev/null)
+if [ $? -eq 0 ]; then
+  tag="$tag "
+fi
+
+ver="$tag[$build]"
+
+status=$(git ls-files --other --directory --exclude-standard | sed q | wc -l)
+if [ $status -ne 0 ]; then
+  ver="$ver beta"
+fi
+
+echo $ver

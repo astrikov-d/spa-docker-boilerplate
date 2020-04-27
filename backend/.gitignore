@@ -1,0 +1,40 @@
+# IDE
+.idea
+.vscode
+
+.orig
+
+# Python
+*.pyc
+*.egg-info
+*.pot
+__pycache__
+
+# Tests
+.cache
+/reports
+.coverage
+nosetests.xml
+coverage.xml
+
+# Project
+www/static
+www/data
+
+conf/fab_settings.py
+
+srv/prod/uwsgi.ini
+
+*.orig
+*.patch
+*.rej
+
+# Virtual environment
+venv
+
+celerybeat-schedule
+celerybeat.pid
+
+logs
+
+.env

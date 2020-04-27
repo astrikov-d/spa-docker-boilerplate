@@ -1,0 +1,58 @@
+version: '3.7'
+
+services:
+  django:
+    container_name: 'sample-project-django'
+    image: 'sample-project-django:dev'
+    build: ./backend
+    user: ${DOCKER_USER}
+    stop_signal: SIGINT
+    volumes:
+      - ./backend:/app:cached
+    expose:
+      - '8000'
+    networks:
+      - default
+    env_file:
+      - ./.env
+    environment:
+      - POSTGRES_URL
+      - CACHE_URL
+      - APP_VERSION
+    command: ./manage.py runserver 0.0.0.0:8000
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.port=8000'
+
+  node:
+    container_name: 'sample-project-node'
+    image: 'sample-project-node:dev'
+    build: ./frontend
+    user: ${DOCKER_USER}
+    volumes:
+      - ./frontend:/app:cached
+    expose:
+      - '3000'
+    environment:
+      - REACT_APP_API_HOST=${DJANGO_HOST}
+    command: yarn start
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.port=3000'
+
+  traefik:
+    image: traefik:v2.0
+    networks:
+      - default
+    command:
+      - --entrypoints.web.address=:80
+      - --entrypoints.websecure.address=:443
+      - --providers.docker
+      - --api.insecure
+    ports:
+      - '80:80'
+      - '443:443'
+      - '8080:8080' # The Web UI
+    volumes:
+      - ./environments/local/traefik/traefik.toml:/etc/traefik/traefik.toml:cached
+      - ./environments/local/traefik/traefik.config.toml:/etc/traefik/traefik.config.toml:cached

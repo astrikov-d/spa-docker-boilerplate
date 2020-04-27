@@ -1,0 +1,25 @@
+[http]
+  [http.routers]
+
+    [http.routers.front-http]
+      rule = "Host(`front.sample.localhost`)"
+      service = "front"
+      entrypoints = ["http"]
+
+    [http.routers.back-http]
+      rule = "Host(`back.sample.localhost`)"
+      service = "back"
+      entrypoints = ["http"]
+
+  [http.services]
+    [http.services.front]
+      [http.services.front.loadBalancer]
+        passHostHeader = true
+        [[http.services.front.loadBalancer.servers]]
+          url = "http://node:3000"
+
+    [http.services.back]
+      [http.services.back.loadBalancer]
+        passHostHeader = true
+        [[http.services.back.loadBalancer.servers]]
+          url = "http://django:8000"
