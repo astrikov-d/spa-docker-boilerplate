@@ -155,9 +155,4 @@ CACHES = {
     }
 }
 
-RAVEN_CONFIG = {
-    'dsn': env('RAVEN_DSN', default=''),
-    'auto_log_stacks': True,
-}
-
 FILE_UPLOAD_PERMISSIONS = 0o644
